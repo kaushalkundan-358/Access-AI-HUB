@@ -12,6 +12,7 @@
     "start": "npm run start --workspace=backend",
     "test": "npm run test --workspace=backend",
     "typecheck": "npm run typecheck --workspace=backend",
+    "build:extension": "npm --prefix extension run build",
     "prisma:generate": "npm run prisma:generate --workspace=backend",
     "db:migrate": "npm run db:migrate --workspace=backend --",
     "db:deploy": "npm run db:deploy --workspace=backend",
