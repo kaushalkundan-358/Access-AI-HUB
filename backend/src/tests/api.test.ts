@@ -7,6 +7,9 @@ jest.mock("../config/database", () => ({
     $queryRaw: jest.fn().mockResolvedValue(1)
   }
 }));
+jest.mock("@supabase/supabase-js", () => ({
+  createClient: jest.fn()
+}));
 jest.mock("../services/aiService", () => ({
   aiService: {
     simplify: jest.fn().mockResolvedValue({
@@ -64,12 +67,15 @@ jest.mock("../services/userService", () => ({
       user: { id: "clh1234567890123456789012", email: "reader@example.com" },
       accessToken: "test-token"
     }),
-    getById: jest.fn()
+    getById: jest.fn(),
+    syncSupabaseUser: jest.fn()
   }
 }));
 
 import { app } from "../app";
 import { documentService } from "../services/documentService";
+import { userService } from "../services/userService";
+import { createClient } from "@supabase/supabase-js";
 
 const accessToken = jwt.sign(
   { email: "reader@example.com" },
@@ -129,6 +135,32 @@ describe("AccessHub AI API", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.data.accessToken).toBe("test-token");
+  });
+
+  it("accepts Supabase access tokens and synchronizes the user", async () => {
+    const getUser = jest.fn().mockResolvedValue({
+      data: { user: { id: "supabase-user-id", email: "reader@example.com" } },
+      error: null
+    });
+    jest.mocked(createClient).mockReturnValue({
+      auth: { getUser }
+    } as unknown as ReturnType<typeof createClient>);
+    jest.mocked(userService.syncSupabaseUser).mockResolvedValue({
+      id: "supabase-user-id",
+      email: "reader@example.com",
+      createdAt: new Date("2026-01-01T00:00:00.000Z")
+    });
+
+    const response = await request(app)
+      .get("/api/profiles")
+      .set("Authorization", "Bearer supabase-access-token");
+
+    expect(response.status).toBe(200);
+    expect(getUser).toHaveBeenCalledWith("supabase-access-token");
+    expect(userService.syncSupabaseUser).toHaveBeenCalledWith(
+      "supabase-user-id",
+      "reader@example.com"
+    );
   });
 
   it("serves the OpenAPI documentation", async () => {

@@ -47,7 +47,7 @@ export const userService = {
 
   async login(email: string, password: string) {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    if (!user?.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
       throw new AppError(401, "Email or password is incorrect", "INVALID_CREDENTIALS");
     }
 
@@ -64,5 +64,62 @@ export const userService = {
     });
     if (!user) throw new AppError(404, "User not found", "USER_NOT_FOUND");
     return user;
+  },
+
+  async syncSupabaseUser(id: string, email: string) {
+    const normalizedEmail = email.toLowerCase();
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true, createdAt: true }
+    });
+
+    if (existingUser) {
+      if (existingUser.email === normalizedEmail) return existingUser;
+      try {
+        return await prisma.user.update({
+          where: { id },
+          data: { email: normalizedEmail },
+          select: { id: true, email: true, createdAt: true }
+        });
+      } catch (error) {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === "P2002"
+        ) {
+          throw new AppError(
+            409,
+            "This email is already associated with another account",
+            "EMAIL_ALREADY_REGISTERED"
+          );
+        }
+        throw error;
+      }
+    }
+
+    try {
+      return await prisma.user.create({
+        data: { id, email: normalizedEmail, passwordHash: null },
+        select: { id: true, email: true, createdAt: true }
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        const userCreatedByConcurrentRequest = await prisma.user.findUnique({
+          where: { id },
+          select: { id: true, email: true, createdAt: true }
+        });
+        if (userCreatedByConcurrentRequest?.email === normalizedEmail) {
+          return userCreatedByConcurrentRequest;
+        }
+        throw new AppError(
+          409,
+          "This email is already associated with another account",
+          "EMAIL_ALREADY_REGISTERED"
+        );
+      }
+      throw error;
+    }
   }
 };

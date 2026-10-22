@@ -22,7 +22,7 @@ Copy-Item .\backend\.env.example .\backend\.env
 
 The root `package.json` is an npm workspace that delegates backend scripts to `backend`. You can also run `npm install` and all backend commands from the `backend` directory.
 
-Edit `backend/.env` before starting. Set `DATABASE_URL` to your PostgreSQL connection string and replace `JWT_SECRET` with a random secret of at least 32 characters. Configure `AI_API_KEY` for real AI responses. The default AI endpoint/model use the OpenAI API; `AI_BASE_URL` and `AI_MODEL` can target a compatible provider. If `AI_API_KEY` is empty, AI routes return `503 AI_NOT_CONFIGURED` rather than synthetic results.
+Edit `backend/.env` before starting. Set `DATABASE_URL` to your PostgreSQL connection string and replace `JWT_SECRET` with a random secret of at least 32 characters. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to verify frontend Supabase sessions on protected API routes. Configure `AI_API_KEY` for real AI responses. The default AI endpoint/model use the OpenAI API; `AI_BASE_URL` and `AI_MODEL` can target a compatible provider. If `AI_API_KEY` is empty, AI routes return `503 AI_NOT_CONFIGURED` rather than synthetic results.
 
 ## Environment variables
 
@@ -31,8 +31,10 @@ Edit `backend/.env` before starting. Set `DATABASE_URL` to your PostgreSQL conne
 | `NODE_ENV` | No | `development` | `development`, `test`, or `production` |
 | `PORT` | No | `4000` | HTTP listen port |
 | `DATABASE_URL` | Yes | — | PostgreSQL connection string used by Prisma |
-| `FRONTEND_ORIGIN` | No | `http://localhost:5173` | Single allowed browser origin |
+| `FRONTEND_ORIGIN` | No | `http://localhost:4173` | Single allowed browser origin |
 | `JWT_SECRET` | Yes | — | Signing secret, minimum 32 characters |
+| `SUPABASE_URL` | For Supabase auth | — | Supabase project URL used to verify access tokens |
+| `SUPABASE_PUBLISHABLE_KEY` | For Supabase auth | — | Browser-safe key used by the auth client |
 | `JWT_EXPIRES_IN` | No | `1d` | JWT lifetime |
 | `UPLOAD_MAX_MB` | No | `10` | Maximum PDF upload size (1-50 MB) |
 | `PDF_MAX_PAGES` | No | `30` | Maximum pages processed per PDF |
@@ -67,6 +69,8 @@ npm run db:studio
 Use `npm run db:migrate -- --name <migration-name>` for later schema changes. In production, deploy already-created migrations with `npm run db:deploy`; do not run `migrate dev` in production.
 
 ## Authentication
+
+The frontend uses Supabase Auth. Configure `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in the frontend environment, and allow localhost and the deployed website in the Supabase Auth URL configuration. Protected API requests can use the Supabase access token; the backend verifies it and synchronizes a local user record on first use. Apply migration `20261022160000_supabase_auth` before enabling Supabase-authenticated API access, because Supabase owns those users' password credentials.
 
 Create an account with `POST /api/users/register` or sign in with `POST /api/users/login`. Both return an `accessToken`. Send it on protected API requests as `Authorization: Bearer <token>`. Passwords are stored as bcrypt hashes. Profiles and documents are scoped to the authenticated account.
 
