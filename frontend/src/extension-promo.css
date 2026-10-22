@@ -1,43 +1,64 @@
-.ah-extension-promo-backdrop {
+.ah-extension-promo {
   position: fixed;
   z-index: 10000;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  overflow-y: auto;
-  padding: 24px;
-  background: rgb(34 38 30 / 46%);
-  animation: ah-promo-fade-in 180ms ease-out both;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(20px, env(safe-area-inset-bottom));
+  width: min(360px, calc(100vw - 32px));
+  padding: 18px;
+  border: 1px solid var(--line, #e9e8df);
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 0 0, rgb(238 238 222 / 65%), transparent 55%),
+    var(--surface, #fffefa);
+  box-shadow: 0 12px 38px rgb(31 36 27 / 18%);
+  color: var(--ink, #30352c);
+  animation: ah-promo-enter 200ms ease-out both;
 }
 
-.ah-extension-promo-dialog {
-  position: relative;
-  width: min(100%, 480px);
-  max-height: min(100%, 720px);
-  overflow-y: auto;
-  padding: 40px 42px 32px;
-  border: 1px solid var(--line, #e9e8df);
-  border-radius: 24px;
-  background:
-    radial-gradient(ellipse at 8% 0%, rgb(238 238 222 / 74%), transparent 45%),
-    var(--surface, #fffefa);
-  box-shadow: 0 24px 80px rgb(31 36 27 / 22%);
+.ah-extension-promo-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-right: 24px;
+}
+
+.ah-extension-promo-icon {
+  display: block;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgb(48 53 44 / 12%);
+}
+
+.ah-extension-promo-copy h2 {
+  margin: 0 0 4px;
   color: var(--ink, #30352c);
-  text-align: center;
-  animation: ah-promo-rise-in 220ms ease-out both;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.ah-extension-promo-copy p {
+  margin: 0;
+  color: var(--muted, #707367);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .ah-extension-promo-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 9px;
+  right: 9px;
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   place-items: center;
-  border: 1px solid var(--line, #e9e8df);
+  padding: 0;
+  border: 0;
   border-radius: 50%;
-  background: var(--surface, #fffefa);
+  background: transparent;
   color: var(--muted, #707367);
   cursor: pointer;
 }
@@ -47,10 +68,9 @@
   color: var(--ink, #30352c);
 }
 
-.ah-extension-promo-close svg,
-.ah-extension-promo-primary svg {
-  width: 19px;
-  height: 19px;
+.ah-extension-promo-close svg {
+  width: 17px;
+  height: 17px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -58,80 +78,30 @@
   stroke-width: 1.8;
 }
 
-.ah-extension-promo-brand {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-
-.ah-extension-promo-icon {
-  display: block;
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  box-shadow: 0 4px 14px rgb(48 53 44 / 12%);
-}
-
-.ah-extension-promo-brand-label {
-  color: var(--olive, #5b6746);
-  font-size: 12px;
-  font-weight: 750;
-  letter-spacing: 0.13em;
-}
-
-.ah-extension-promo-eyebrow {
-  margin: 0 0 9px;
-  color: var(--olive, #5b6746);
-  font-size: 13px;
-  font-weight: 650;
-  letter-spacing: 0.025em;
-}
-
-.ah-extension-promo-dialog h2 {
-  max-width: 360px;
-  margin: 0 auto 13px;
-  color: var(--ink, #30352c);
-  font-size: clamp(25px, 6vw, 32px);
-  font-weight: 700;
-  letter-spacing: -0.045em;
-  line-height: 1.16;
-}
-
-.ah-extension-promo-copy {
-  max-width: 370px;
-  margin: 0 auto 25px;
-  color: var(--muted, #707367);
-  font-size: 15px;
-  line-height: 1.7;
-}
-
 .ah-extension-promo-primary {
   display: flex;
   width: 100%;
-  min-height: 52px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px 20px;
+  margin-top: 15px;
+  padding: 9px 14px;
   border: 1px solid var(--olive-dark, #424e35);
-  border-radius: 13px;
+  border-radius: 11px;
   background: var(--olive, #5b6746);
   color: #fffefa;
-  font-size: 15px;
+  cursor: pointer;
+  font-size: 13px;
   font-weight: 650;
   text-decoration: none;
   transition:
-    background-color 160ms ease,
-    transform 160ms ease,
-    box-shadow 160ms ease;
+    background-color 150ms ease,
+    transform 150ms ease;
 }
 
 .ah-extension-promo-primary:not(:disabled):hover {
   transform: translateY(-1px);
   background: var(--olive-dark, #424e35);
-  box-shadow: 0 6px 16px rgb(66 78 53 / 20%);
 }
 
 .ah-extension-promo-primary:disabled {
@@ -142,78 +112,42 @@
 }
 
 .ah-extension-promo-availability {
-  min-height: 36px;
-  margin: 12px 0 14px;
+  margin: 8px 0 0;
   color: var(--muted, #707367);
-  font-size: 12px;
-  line-height: 1.5;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
-.ah-extension-promo-later {
-  min-height: 44px;
-  padding: 8px 16px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--olive-dark, #424e35);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.ah-extension-promo-later:hover {
-  background: var(--cream, #eeeede);
-}
-
-.ah-extension-promo-dialog :focus-visible {
+.ah-extension-promo :focus-visible {
   outline: 3px solid #a8b58b;
   outline-offset: 3px;
 }
 
-@keyframes ah-promo-fade-in {
+@keyframes ah-promo-enter {
   from {
+    transform: translateY(8px);
     opacity: 0;
   }
 
   to {
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
-@keyframes ah-promo-rise-in {
-  from {
-    transform: translateY(10px) scale(0.99);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0) scale(1);
-    opacity: 1;
-  }
-}
-
-@media (max-width: 520px) {
-  .ah-extension-promo-backdrop {
-    padding: 16px;
-  }
-
-  .ah-extension-promo-dialog {
-    padding: 36px 24px 24px;
-    border-radius: 20px;
-  }
-
-  .ah-extension-promo-brand {
-    margin-bottom: 22px;
+@media (max-width: 480px) {
+  .ah-extension-promo {
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: min(340px, calc(100vw - 24px));
+    padding: 15px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ah-extension-promo-backdrop,
-  .ah-extension-promo-dialog {
-    animation: none;
-  }
-
+  .ah-extension-promo,
   .ah-extension-promo-primary {
+    animation: none;
     transition: none;
   }
 }
