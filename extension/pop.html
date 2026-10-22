@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccessHub AI</title>
+  <style>
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: Arial, sans-serif;
+      background: #101827;
+      color: white;
+    }
+    h2 { color: #7dd3fc; }
+    button {
+      width: 100%;
+      padding: 11px;
+      background: #0284c7;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #results { margin-top: 14px; }
+    li { margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h2>AccessHub AI</h2>
+  <p>Check this webpage for basic accessibility issues.</p>
+  <button id="scan">Scan This Page</button>
+  <div id="results" aria-live="polite"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
