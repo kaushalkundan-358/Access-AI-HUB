@@ -1,0 +1,245 @@
+openapi: 3.0.3
+info:
+  title: AccessHub AI API
+  version: 1.0.0
+  description: Authenticated accessibility tools for PDF text extraction and AI-assisted reading.
+servers:
+  - url: http://localhost:4000/api
+security:
+  - bearerAuth: []
+paths:
+  /health:
+    get:
+      security: []
+      summary: Check API and PostgreSQL health
+      responses:
+        "200":
+          description: Healthy
+  /users/register:
+    post:
+      security: []
+      summary: Create an account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        "201":
+          description: Account created and access token returned
+        "400":
+          description: Invalid credentials
+        "409":
+          description: Email already registered
+  /users/login:
+    post:
+      security: []
+      summary: Sign in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        "200":
+          description: Access token returned
+        "401":
+          description: Invalid credentials
+  /users/me:
+    get:
+      summary: Get the authenticated account
+      responses:
+        "200":
+          description: Current account
+  /documents/upload:
+    post:
+      summary: Upload a PDF and extract its text
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Document processed; temporary upload removed
+        "400":
+          description: Invalid or unparseable PDF
+        "413":
+          description: Upload/page limit exceeded
+  /documents/{id}/text:
+    get:
+      summary: Retrieve extracted text for an owned document
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Extracted document text
+        "404":
+          description: Document not found
+  /ai/simplify:
+    post:
+      summary: Simplify text using the configured AI provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TextInput"
+      responses:
+        "200":
+          description: AI-generated simplified text
+        "503":
+          description: AI provider is not configured
+  /ai/summarize:
+    post:
+      summary: Summarize text using the configured AI provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TextInput"
+      responses:
+        "200":
+          description: AI-generated summary
+  /ai/explain:
+    post:
+      summary: Explain source text or a named topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplainInput"
+      responses:
+        "200":
+          description: AI-generated explanation
+  /ai/translate:
+    post:
+      summary: Translate text between English and Hindi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TranslateInput"
+      responses:
+        "200":
+          description: AI-generated translation
+  /profiles:
+    get:
+      summary: List the authenticated user's accessibility profiles
+      responses:
+        "200":
+          description: Profiles
+    post:
+      summary: Create an accessibility profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "201":
+          description: Created profile
+  /profiles/{id}:
+    put:
+      summary: Update an owned accessibility profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200":
+          description: Updated profile
+        "404":
+          description: Profile not found
+    delete:
+      summary: Delete an owned accessibility profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted profile
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Credentials:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 10
+    TextInput:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+          maxLength: 20000
+    ExplainInput:
+      allOf:
+        - $ref: "#/components/schemas/TextInput"
+        - type: object
+          properties:
+            topic:
+              type: string
+              maxLength: 200
+    TranslateInput:
+      type: object
+      required: [text, targetLanguage]
+      properties:
+        text:
+          type: string
+        targetLanguage:
+          type: string
+          enum: [en, hi]
+    ProfileInput:
+      type: object
+      properties:
+        name:
+          type: string
+        fontSize:
+          type: string
+          enum: [small, medium, large, extra-large]
+        contrastMode:
+          type: string
+          enum: [normal, high, dark]
+        preferredLanguage:
+          type: string
+          enum: [en, hi]
+        readingPreferences:
+          type: object

@@ -1,0 +1,9 @@
+process.env.NODE_ENV = "test";
+process.env.DATABASE_URL = "postgresql://test:test@localhost:5432/accesshub_ai_test";
+process.env.JWT_SECRET = "test-only-secret-that-is-long-enough-for-tests";
+process.env.AI_API_KEY = "";
+process.env.AI_TIMEOUT_MS = "30000";
+process.env.UPLOAD_MAX_MB = "10";
+process.env.PDF_MAX_PAGES = "30";
+process.env.RATE_LIMIT_WINDOW_MS = "900000";
+process.env.RATE_LIMIT_MAX = "100";
