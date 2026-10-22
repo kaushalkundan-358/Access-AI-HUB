@@ -7,6 +7,7 @@ const appHtmlPath = fileURLToPath(
 );
 
 export default defineConfig({
+  publicDir: fileURLToPath(new URL("../extension/public", import.meta.url)),
   plugins: [
     {
       name: "accesshub-preview-entry",
